@@ -1,0 +1,91 @@
+START
+
+// Data Structure
+DEFINE laporanList AS EMPTY LIST
+
+// Function to Create Laporan
+FUNCTION createLaporan(jenisLaporan, tanggal, file)
+    IF jenisLaporan IS EMPTY OR tanggal IS EMPTY OR file IS EMPTY THEN
+        RETURN "Semua field harus diisi."
+    ENDIF
+    
+    // Create a new laporan object
+    laporan = {
+        id: GENERATE_UNIQUE_ID(),
+        jenis: jenisLaporan,
+        tanggal: tanggal,
+        file: file
+    }
+    
+    // Add laporan to the list
+    APPEND laporan TO laporanList
+    RETURN "Laporan berhasil dibuat."
+END FUNCTION
+
+// Function to Read Laporan
+FUNCTION readLaporan()
+    IF laporanList IS EMPTY THEN
+        RETURN "Tidak ada laporan yang tersedia."
+    ENDIF
+    
+    RETURN laporanList
+END FUNCTION
+
+// Function to Update Laporan
+FUNCTION updateLaporan(id, jenisLaporan, tanggal, file)
+    laporan = FIND laporan IN laporanList WHERE laporan.id EQUALS id
+    
+    IF laporan IS NULL THEN
+        RETURN "Laporan tidak ditemukan."
+    ENDIF
+    
+    // Update laporan fields
+    laporan.jenis = (jenisLaporan IS NOT EMPTY) ? jenisLaporan : laporan.jenis
+    laporan.tanggal = (tanggal IS NOT EMPTY) ? tanggal : laporan.tanggal
+    laporan.file = (file IS NOT EMPTY) ? file : laporan.file
+    
+    RETURN "Laporan berhasil diperbarui."
+END FUNCTION
+
+// Function to Delete Laporan
+FUNCTION deleteLaporan(id)
+    laporan = FIND laporan IN laporanList WHERE laporan.id EQUALS id
+    
+    IF laporan IS NULL THEN
+        RETURN "Laporan tidak ditemukan."
+    ENDIF
+    
+    // Remove laporan from the list
+    REMOVE laporan FROM laporanList
+    RETURN "Laporan berhasil dihapus."
+END FUNCTION
+
+// Main Program Flow
+WHILE TRUE DO
+    DISPLAY MENU (1. Create, 2. Read, 3. Update, 4. Delete, 5. Exit)
+    INPUT choice
+
+    SWITCH choice
+        CASE 1:
+            INPUT jenisLaporan, tanggal, file
+            OUTPUT createLaporan(jenisLaporan, tanggal, file)
+            BREAK
+        CASE 2:
+            OUTPUT readLaporan()
+            BREAK
+        CASE 3:
+            INPUT id, jenisLaporan, tanggal, file
+            OUTPUT updateLaporan(id, jenisLaporan, tanggal, file)
+            BREAK
+        CASE 4:
+            INPUT id
+            OUTPUT deleteLaporan(id)
+            BREAK
+        CASE 5:
+            EXIT
+        DEFAULT:
+            OUTPUT "Pilihan tidak valid."
+    ENDSWITCH
+ENDWHILE
+
+END
